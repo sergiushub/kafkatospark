@@ -22,8 +22,10 @@ object Producer {
   val filterUsOnly = new FilterQuery().track("es")
 
 
-  private def getInfoTweet(s: Status): String = {
-    s.getPlace().getCountry()
+  private def getTweetJson(s: Status): String = {
+    val tweetJson = TwitterObjectFactory.getRawJSON(s)
+    println(tweetJson)
+    tweetJson
   }
 
   private def sendToKafka(s:String) {
@@ -33,7 +35,7 @@ object Producer {
 
   def main (args: Array[String]) {
     val twitterStream = TwitterStream.getStream
-    twitterStream.addListener(new OnTweetPosted(s => sendToKafka(getInfoTweet(s))))
+    twitterStream.addListener(new OnTweetPosted(s => sendToKafka(getTweetJson(s))))
     twitterStream.filter(filterUsOnly)
   }
 
